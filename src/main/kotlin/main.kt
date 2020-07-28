@@ -99,12 +99,21 @@ fun main(args: Array<String>) {
                 // 2
                 .subscribeBy(
                         // 3
-                        onSuccess = { println(it) },
-                        onError = { println("Error, $it") }
+                        onSuccess = { /*println(it)*/ },
+                        onError = { /*println("Error, $it")*/ }
                 )
 
         subscriptions.add(observer)
         subscriptions.dispose()
+    }
+
+    exampleOf("never") {
+        val observable = Observable.never<Any>()
+
+        observable.subscribeBy(
+                onNext = { println(it) },
+                onComplete = { println("Completed") }
+        )
     }
 }
 
