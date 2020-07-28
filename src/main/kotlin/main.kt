@@ -1,6 +1,9 @@
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
+import java.io.File
+import java.io.FileNotFoundException
 
 
 fun main(args: Array<String>) {
@@ -70,6 +73,38 @@ fun main(args: Array<String>) {
         disposables.dispose()
     }
 
-    
+    exampleOf("Single") {
+        // 1
+        val subscriptions = CompositeDisposable()
+        // 2
+        fun loadText(filename: String): Single<String> {
+            // 3
+            return Single.create create@{ emitter ->
+                // 1
+                val file = File(filename)
+// 2
+                if (!file.exists()) {
+                    emitter.onError(FileNotFoundException("Can’t find $filename"))
+                    return@create
+                }
+// 3
+                val contents = file.readText(Charsets.UTF_8)
+// 4
+                emitter.onSuccess(contents)
+            }
+        }
+
+        // 1
+        val observer = loadText("Copyright.txt")
+                // 2
+                .subscribeBy(
+                        // 3
+                        onSuccess = { println(it) },
+                        onError = { println("Error, $it") }
+                )
+
+        subscriptions.add(observer)
+        subscriptions.dispose()
+    }
 }
 
