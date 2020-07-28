@@ -117,8 +117,13 @@ fun main(args: Array<String>) {
                 .doOnComplete { println("Completed") }
                 .doOnError { println("Error Occurred: $it") }
                 .doOnSubscribe { println("Subscribed: $it") }
+                .subscribeBy(onNext = {
+                    println(it)
+                }, onComplete = {
+                    println("Completed")
+                })
 
-        disposable.add(subscription.subscribe())
+        disposable.add(subscription)
         disposable.dispose()
     }
 }
