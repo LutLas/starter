@@ -108,12 +108,18 @@ fun main(args: Array<String>) {
     }
 
     exampleOf("never") {
-        val observable = Observable.never<Any>()
+        val disposable = CompositeDisposable()
 
-        observable.subscribeBy(
-                onNext = { println(it) },
-                onComplete = { println("Completed") }
-        )
+        val observable = Observable.never<Any>()
+        val subscription = observable
+                .doOnDispose { println("Disposed") }
+                .doOnNext { println("Next Event: $it") }
+                .doOnComplete { println("Completed") }
+                .doOnError { println("Error Occurred: $it") }
+                .doOnSubscribe { println("Subscribed: $it") }
+
+        disposable.add(subscription.subscribe())
+        disposable.dispose()
     }
 }
 
